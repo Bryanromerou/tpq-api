@@ -17,11 +17,10 @@ app.set('view engine', 'ejs');
 app.use(express.json()); // 
 // app.use(cors(corsOptions));
 app.use("/questions", routes.questions);
+app.use("/replies", routes.replies);
 app.get("/",(req,res)=>{
     res.send("home")
 });
-
-// app.use("/api/v1/properties", routes.properties)
 
 
 app.listen(port,()=>{console.log(`Server now running on port ${port}`)})
