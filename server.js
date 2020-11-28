@@ -10,14 +10,15 @@ const app = express();
 // Middleware
 app.set('view engine', 'ejs');
 
-// const corsOptions = {
-//     origin: "http://localhost:3000"
-// };
+const corsOptions = {
+    origin: "http://localhost:3000" //This Whitelist this site
+};
 
 app.use(express.json()); // 
-// app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 app.use("/questions", routes.questions);
 app.use("/replies", routes.replies);
+app.use("/categories", routes.categories);
 app.get("/",(req,res)=>{
     res.send("home")
 });
