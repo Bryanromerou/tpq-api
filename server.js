@@ -20,6 +20,7 @@ app.use("/questions", routes.questions);
 app.use("/replies", routes.replies);
 app.use("/categories", routes.categories);
 app.use("/auth", routes.auth);
+app.use("/users", routes.users);
 app.get("/",(req,res)=>{
     res.send("home")
 });

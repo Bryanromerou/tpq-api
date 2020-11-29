@@ -11,8 +11,9 @@ const User = require('../models/User');
  router.get('/',async(req,res)=>{
     try {
         const users = await User.find();//await can only work inside of an async function
-        if(!user) throw Error('No users Exist');
+        if(!users) throw Error('No users Exist');
         res.json(users);
+        // res.json({users:users.length});
 
     } catch (e) {
         res.status(400).json({msg: e.message})

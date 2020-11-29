@@ -3,4 +3,5 @@ module.exports = {
     replies: require("./replies"),
     categories: require("./categories"),
     auth: require("./auth"),
+    users: require("./users"),
 }
