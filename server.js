@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-require('dotenv').config()
+require('dotenv').config();
 const routes = require ('./routes');
 
 const port = process.env.PORT || 4001;
@@ -19,6 +19,7 @@ app.use(cors(corsOptions));
 app.use("/questions", routes.questions);
 app.use("/replies", routes.replies);
 app.use("/categories", routes.categories);
+app.use("/auth", routes.auth);
 app.get("/",(req,res)=>{
     res.send("home")
 });

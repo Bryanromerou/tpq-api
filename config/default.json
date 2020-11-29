@@ -1,0 +1,4 @@
+{
+    "mongoURI": "mongodb+srv://bryan:Paloma123@capstone.oyywv.mongodb.net/capstone?retryWrites=true&w=majority",
+    "jwtSecret": "sl_myJwtSecret"
+}
