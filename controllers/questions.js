@@ -70,11 +70,50 @@ const destroy = (req,res)=>{
     });
 };
 
+const getReplies = (req,res)=>{
+
+    db.Question.findById(req.params.id).then((foundQuestion)=>{
+        db.Reply.findById({questions:foundQuestion}).then((foundReplies)=>{
+
+            res.json(foundReplies);
+    
+        }).catch((e)=>{
+    
+            console.log('Error in question.addReplies', e);
+            res.json({Error: e});
+    
+        })
+    }).catch((err)=>{
+
+        console.log('Error in question.addReplies', err);
+        res.json({Error: 'Unable to get your data'})
+
+    });
+
+
+    
+
+    // res.json({questionId:req.params.id})
+};
+
+const addReplies = (req,res)=>{
+    db.Question.findById(req.params.id).then((foundQuestion)=>{
+        res.send("hello")
+    }).catch((err)=>{
+
+        console.log('Error in question.addReplies', err);
+        res.json({Error: 'Unable to get your data'})
+
+    });
+}
+
 
 module.exports = {
     index,
     show,
     create,
     update,
-    destroy
+    destroy,
+    getReplies,
+    addReplies
 }

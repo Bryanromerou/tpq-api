@@ -70,11 +70,39 @@ const destroy = (req,res)=>{
     });
 };
 
+const create1 = (req,res)=>{
+    db.Question.findById(req.body.questId).then((foundQuestion)=>{
+        const newReply = new db.Reply({
+            reply: String,
+            questions:foundQuestion,
+        });
+        newReply.save().then((savedReply)=>{
+            foundQuestion.replies.push(savedReply);
+            foundQuestion.save().then((savedQuestion)=>{
+                res.status(201).json({reply: savedReply, question:savedQuestion});
+            }).catch((e)=>{
+                res.json({Error: e})
+            });
+        }).catch((e)=>{
+            res.json({Error: e})
+        })
+        // foundQuestion.replies
+
+    }).catch((err)=>{
+
+        console.log('Error in reply.create', err);
+        res.json({Error: e})
+
+    });
+    // res.send("hello")
+};
+
 
 module.exports = {
     index,
     show,
     create,
     update,
-    destroy
+    destroy,
+    create1
 }
