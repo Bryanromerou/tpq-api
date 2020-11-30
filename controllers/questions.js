@@ -1,4 +1,5 @@
 const db = require("../models");
+const mongoose = require('mongoose')
 
 
 const index = (req,res)=>{
@@ -73,16 +74,16 @@ const destroy = (req,res)=>{
 const getReplies = (req,res)=>{
 
     db.Question.findById(req.params.id).then((foundQuestion)=>{
-        db.Reply.findById({questions:foundQuestion}).then((foundReplies)=>{
-
-            res.json(foundReplies);
-    
-        }).catch((e)=>{
-    
-            console.log('Error in question.addReplies', e);
-            res.json({Error: e});
-    
-        })
+        const repliesIds = foundQuestion.replies.map((id)=>{
+            return mongoose.Types.ObjectId(id);
+        });
+        db.Reply.find({
+            '_id': {$in:repliesIds}
+        }, function(err, docs){
+            console.log(docs);
+            res.json(docs);
+       })
+        // res.json({repliesIds:foundQuestion.replies})
     }).catch((err)=>{
 
         console.log('Error in question.addReplies', err);
@@ -90,7 +91,7 @@ const getReplies = (req,res)=>{
 
     });
 
-
+    
     
 
     // res.json({questionId:req.params.id})

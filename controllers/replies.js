@@ -62,8 +62,15 @@ const update = (req,res)=>{
 
 
 const destroy = (req,res)=>{
-    db.Reply.findByIdAndDelete(req.params.id).then((deletedReply)=>{
-        res.json({reply: deletedReply})
+    const replyId = req.params.id;
+    db.Reply.findByIdAndDelete(replyId).then((deletedReply)=>{
+        db.Question.findOne({'replies': replyId}).then((foundQuestion)=>{
+            foundQuestion.replies.remove(replyId)
+            foundQuestion.save().then((updatedQuestion)=>{
+                res.json({question: updatedQuestion});
+            })
+        });
+        // res.json({reply: deletedReply})
     }).catch((err)=>{
         console.log('Error in reply.destroy', err);
         res.json({Error: 'Unable to Delete data'})
@@ -73,9 +80,10 @@ const destroy = (req,res)=>{
 const create1 = (req,res)=>{
     db.Question.findById(req.body.questId).then((foundQuestion)=>{
         const newReply = new db.Reply({
-            reply: String,
+            reply: req.body.reply,
             questions:foundQuestion,
         });
+        
         newReply.save().then((savedReply)=>{
             foundQuestion.replies.push(savedReply);
             foundQuestion.save().then((savedQuestion)=>{
@@ -86,7 +94,6 @@ const create1 = (req,res)=>{
         }).catch((e)=>{
             res.json({Error: e})
         })
-        // foundQuestion.replies
 
     }).catch((err)=>{
 
@@ -94,7 +101,6 @@ const create1 = (req,res)=>{
         res.json({Error: e})
 
     });
-    // res.send("hello")
 };
 
 

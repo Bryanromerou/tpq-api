@@ -1,0 +1,18 @@
+[
+    {
+        "question": "What is the meaning of life?",
+        "category": "Philosophical"
+    },
+    {
+        "question": "Who is the best actor all time?",
+        "category": "Entertainment"
+    },
+    {
+        "question": "Who was the first president?",
+        "category": "Educational"
+    },
+    {
+        "question": "Who else has thought of ditching everything and just becoming a nomad?",
+        "category": "Relatable"
+    }
+]
