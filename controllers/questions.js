@@ -17,7 +17,7 @@ const index = (req,res)=>{
 
 
 const show = (req,res)=>{
-    db.Question.findById(req.params.id).then((foundQuestion)=>{
+    db.Question.findById(req.params.id).populate('replies').then((foundQuestion)=>{
 
         res.json({question: foundQuestion})
 
@@ -71,32 +71,6 @@ const destroy = (req,res)=>{
     });
 };
 
-const getReplies = (req,res)=>{
-
-    db.Question.findById(req.params.id).then((foundQuestion)=>{
-        const repliesIds = foundQuestion.replies.map((id)=>{
-            return mongoose.Types.ObjectId(id);
-        });
-        db.Reply.find({
-            '_id': {$in:repliesIds}
-        }, function(err, docs){
-            console.log(docs);
-            res.json(docs);
-       })
-        // res.json({repliesIds:foundQuestion.replies})
-    }).catch((err)=>{
-
-        console.log('Error in question.addReplies', err);
-        res.json({Error: 'Unable to get your data'})
-
-    });
-
-    
-    
-
-    // res.json({questionId:req.params.id})
-};
-
 const addReplies = (req,res)=>{
     db.Question.findById(req.params.id).then((foundQuestion)=>{
         res.send("hello")
@@ -115,6 +89,5 @@ module.exports = {
     create,
     update,
     destroy,
-    getReplies,
     addReplies
 }
