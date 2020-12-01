@@ -47,6 +47,8 @@ router.post('/login', async (req,res)=>{
  * @route   POST /auth/register
  * @desc    Registers a new user
  * @access  Public
+ * {"email": "myEmail@gmail.com", "password": "Yellow123", name: "Peter Griffin"}
+ * 
  */
 
 router.post('/register',async(req,res)=>{
