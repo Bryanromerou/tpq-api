@@ -78,15 +78,25 @@ const destroy = (req,res)=>{
 };
 
 const create1 = (req,res)=>{
+    //Looks for question with given Id
     db.Question.findById(req.body.questId).then((foundQuestion)=>{
+        
+        // Creates a Reply
         const newReply = new db.Reply({
             reply: req.body.reply,
             questions:foundQuestion,
         });
         
+        //Saves the Reply
         newReply.save().then((savedReply)=>{
+
+            //Adds the saved reply to the array of replies inside of the question object
             foundQuestion.replies.push(savedReply);
+
+            //Saves Modified Question
             foundQuestion.save().then((savedQuestion)=>{
+
+                //Returns Modified question and saved reply
                 res.status(201).json({reply: savedReply, question:savedQuestion});
             }).catch((e)=>{
                 res.json({Error: e})

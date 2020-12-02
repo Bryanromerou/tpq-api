@@ -64,7 +64,12 @@ const update = (req,res)=>{
 
 const destroy = (req,res)=>{
     db.Question.findByIdAndDelete(req.params.id).then((deletedQuestion)=>{
-        res.json({question: deletedQuestion})
+        res.json({question: deletedQuestion});
+        db.Reply.deleteMany({_id:{$in: deletedQuestion.replies}}).then((response)=>{ 
+            res.json(res);
+        }).catch((error)=>{
+            res.json({Error: error})
+        });
     }).catch((err)=>{
         console.log('Error in question.destroy', err);
         res.json({Error: 'Unable to Delete data'})
@@ -81,6 +86,7 @@ const addReplies = (req,res)=>{
 
     });
 }
+
 
 
 module.exports = {

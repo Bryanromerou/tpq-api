@@ -1,4 +1,4 @@
-// import  from 'mongoose';
+const mongoose = require("mongoose");
 const { Schema, model } = require('mongoose');
 
 // Create Schema
@@ -19,7 +19,16 @@ const UserSchema = new Schema({
   register_date: {
     type: Date,
     default: Date.now
-  }
+  },
+  replies: [{
+    type:mongoose.Schema.Types.ObjectId,
+    ref: "Reply"
+  }],
+  questions: [{
+    type:mongoose.Schema.Types.ObjectId,
+    ref: "Question"
+  }],
+
 });
 
 const User = model('user', UserSchema);

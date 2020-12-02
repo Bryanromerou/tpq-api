@@ -7,6 +7,10 @@ const ReplySchema = new Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref: "Question"
     },
+    user: {
+        type:mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }
 });
 
 const Reply = mongoose.model("Reply", ReplySchema);
