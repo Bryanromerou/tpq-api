@@ -32,7 +32,14 @@ const show = (req,res)=>{
 
 const create = (req,res) =>{
     db.Question.create(req.body).then((savedQuestion)=>{
-
+        db.User.findById(req.body.user).then((foundUser)=>{
+            foundUser.questions.push(savedQuestion._id);
+            foundUser.save().then(
+                res.json({savedQuestion})
+            ).catch((error)=>{
+                res.json({Error: error, personalError: "Problem saving question to user"})
+            })
+        }).catch((error)=>{res.json({Error:error, savedQuestion: savedQuestion})})
         res.status(201).json({question: savedQuestion});
 
     }).catch((err)=>{
@@ -63,10 +70,17 @@ const update = (req,res)=>{
 
 
 const destroy = (req,res)=>{
+    const questionId = req.params.id;
     db.Question.findByIdAndDelete(req.params.id).then((deletedQuestion)=>{
-        res.json({question: deletedQuestion});
-        db.Reply.deleteMany({_id:{$in: deletedQuestion.replies}}).then((response)=>{ 
-            res.json(res);
+        // res.json({question: deletedQuestion});
+        db.Reply.deleteMany({_id:{$in: deletedQuestion.replies}}).then((response)=>{
+            db.User.findOne({'question': questionId}).then((foundUser)=>{
+                foundUser.questions.remove(questionId)
+                foundUser.save().then((updatedUser)=>{
+                    res.json({user: updatedUser});
+                })
+            });
+            // res.json(response);
         }).catch((error)=>{
             res.json({Error: error})
         });
@@ -76,17 +90,6 @@ const destroy = (req,res)=>{
     });
 };
 
-const addReplies = (req,res)=>{
-    db.Question.findById(req.params.id).then((foundQuestion)=>{
-        res.send("hello")
-    }).catch((err)=>{
-
-        console.log('Error in question.addReplies', err);
-        res.json({Error: 'Unable to get your data'})
-
-    });
-}
-
 
 
 module.exports = {
@@ -94,6 +97,5 @@ module.exports = {
     show,
     create,
     update,
-    destroy,
-    addReplies
+    destroy
 }

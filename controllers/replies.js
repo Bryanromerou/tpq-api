@@ -84,11 +84,20 @@ const create1 = (req,res)=>{
         // Creates a Reply
         const newReply = new db.Reply({
             reply: req.body.reply,
-            questions:foundQuestion,
+            questions:foundQuestion
         });
-        
+        if(req.body.user) newReply.user = req.body.user;
+
         //Saves the Reply
         newReply.save().then((savedReply)=>{
+            db.User.findById(req.body.user).then((foundUser)=>{
+                foundUser.replies.push(savedReply._id);
+                foundUser.save().then(
+                    res.json({savedReply})
+                ).catch((error)=>{
+                    res.json({Error: error, personalError: "Problem saving question to user"})
+                })
+            }).catch((error)=>{res.json({Error:error, savedReply: savedReply})})
 
             //Adds the saved reply to the array of replies inside of the question object
             foundQuestion.replies.push(savedReply);
@@ -97,7 +106,7 @@ const create1 = (req,res)=>{
             foundQuestion.save().then((savedQuestion)=>{
 
                 //Returns Modified question and saved reply
-                res.status(201).json({reply: savedReply, question:savedQuestion});
+                res.status(201).json({reply: savedReply});
             }).catch((e)=>{
                 res.json({Error: e})
             });
