@@ -70,6 +70,12 @@ const destroy = (req,res)=>{
                 res.json({question: updatedQuestion});
             })
         });
+        db.User.findOne({'replies': replyId}).then((foundUser)=>{
+            foundUser.replies.remove(replyId)
+            foundUser.save().then((updatedUser)=>{
+                res.json({user: updatedUser});
+            })
+        });
         // res.json({reply: deletedReply})
     }).catch((err)=>{
         console.log('Error in reply.destroy', err);
