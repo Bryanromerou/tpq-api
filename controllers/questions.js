@@ -90,12 +90,20 @@ const destroy = (req,res)=>{
     });
 };
 
-
+const findById = (req,res)=>{
+    const {userId} = req.body;
+    db.Question.find({'user':userId}).then((foundQuestions)=>{
+        res.send(foundQuestions);
+    }).catch((error)=>{
+        res.json({error});
+    })
+}
 
 module.exports = {
     index,
     show,
     create,
     update,
-    destroy
+    destroy,
+    findById  
 }
