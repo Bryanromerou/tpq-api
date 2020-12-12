@@ -1,4 +1,5 @@
 const db = require("../models");
+const mongoose = require('mongoose')
 
 
 const index = (req,res)=>{
@@ -16,7 +17,7 @@ const index = (req,res)=>{
 
 
 const show = (req,res)=>{
-    db.Question.findById(req.params.id).then((foundQuestion)=>{
+    db.Question.findById(req.params.id).populate('replies').then((foundQuestion)=>{
 
         res.json({question: foundQuestion})
 
@@ -31,7 +32,14 @@ const show = (req,res)=>{
 
 const create = (req,res) =>{
     db.Question.create(req.body).then((savedQuestion)=>{
-
+        db.User.findById(req.body.user).then((foundUser)=>{
+            foundUser.questions.push(savedQuestion._id);
+            foundUser.save().then(
+                res.json({savedQuestion})
+            ).catch((error)=>{
+                res.json({Error: error, personalError: "Problem saving question to user"})
+            })
+        }).catch((error)=>{res.json({Error:error, savedQuestion: savedQuestion})})
         res.status(201).json({question: savedQuestion});
 
     }).catch((err)=>{
@@ -62,19 +70,40 @@ const update = (req,res)=>{
 
 
 const destroy = (req,res)=>{
+    const questionId = req.params.id;
     db.Question.findByIdAndDelete(req.params.id).then((deletedQuestion)=>{
-        res.json({question: deletedQuestion})
+        // res.json({question: deletedQuestion});
+        db.Reply.deleteMany({_id:{$in: deletedQuestion.replies}}).then((response)=>{
+            db.User.findOne({'question': questionId}).then((foundUser)=>{
+                foundUser.questions.remove(questionId)
+                foundUser.save().then((updatedUser)=>{
+                    res.json({user: updatedUser});
+                })
+            });
+            // res.json(response);
+        }).catch((error)=>{
+            res.json({Error: error})
+        });
     }).catch((err)=>{
         console.log('Error in question.destroy', err);
         res.json({Error: 'Unable to Delete data'})
     });
 };
 
+const findById = (req,res)=>{
+    const {userId} = req.body;
+    db.Question.find({'user':userId}).then((foundQuestions)=>{
+        res.send(foundQuestions);
+    }).catch((error)=>{
+        res.json({error});
+    })
+}
 
 module.exports = {
     index,
     show,
     create,
     update,
-    destroy
+    destroy,
+    findById  
 }

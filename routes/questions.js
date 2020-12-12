@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const ctrl = require("../controllers");
 
-
+router.post("/findById",ctrl.questions.findById);
 router.get("/",ctrl.questions.index);
 router.get("/:id",ctrl.questions.show);
 router.post("/",ctrl.questions.create);

@@ -62,11 +62,69 @@ const update = (req,res)=>{
 
 
 const destroy = (req,res)=>{
-    db.Reply.findByIdAndDelete(req.params.id).then((deletedReply)=>{
-        res.json({reply: deletedReply})
+    const replyId = req.params.id;
+    db.Reply.findByIdAndDelete(replyId).then((deletedReply)=>{
+        db.Question.findOne({'replies': replyId}).then((foundQuestion)=>{
+            foundQuestion.replies.remove(replyId)
+            foundQuestion.save().then((updatedQuestion)=>{
+                res.json({question: updatedQuestion});
+            })
+        });
+        db.User.findOne({'replies': replyId}).then((foundUser)=>{
+            foundUser.replies.remove(replyId)
+            foundUser.save().then((updatedUser)=>{
+                res.json({user: updatedUser});
+            })
+        });
+        // res.json({reply: deletedReply})
     }).catch((err)=>{
         console.log('Error in reply.destroy', err);
         res.json({Error: 'Unable to Delete data'})
+    });
+};
+
+const create1 = (req,res)=>{
+    //Looks for question with given Id
+    db.Question.findById(req.body.questId).then((foundQuestion)=>{
+        
+        // Creates a Reply
+        const newReply = new db.Reply({
+            reply: req.body.reply,
+            questions:foundQuestion
+        });
+        if(req.body.user) newReply.user = req.body.user;
+
+        //Saves the Reply
+        newReply.save().then((savedReply)=>{
+            db.User.findById(req.body.user).then((foundUser)=>{
+                foundUser.replies.push(savedReply._id);
+                foundUser.save().then(
+                    res.json({savedReply})
+                ).catch((error)=>{
+                    res.json({Error: error, personalError: "Problem saving question to user"})
+                })
+            }).catch((error)=>{res.json({Error:error, savedReply: savedReply})})
+
+            //Adds the saved reply to the array of replies inside of the question object
+            foundQuestion.replies.push(savedReply);
+
+            //Saves Modified Question
+            foundQuestion.save().then((savedQuestion)=>{
+
+                //Returns Modified question and saved reply
+                res.status(201).json({reply: savedReply});
+            }).catch((e)=>{
+                res.json({Error: e})
+            });
+        }).catch((e)=>{
+            res.json({Error: e})
+        })
+
+    }).catch((err)=>{
+
+        console.log('Error in reply.create', err);
+        res.json({Error: e})
+
     });
 };
 
@@ -76,5 +134,6 @@ module.exports = {
     show,
     create,
     update,
-    destroy
+    destroy,
+    create1
 }

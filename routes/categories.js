@@ -2,7 +2,7 @@ const router = require("express").Router();
 const db = require("../models");
 
 router.get("/",(req,res)=>{
-    res.json({categories: ["Entertainment","Philosophical","Educational","Relatable"]});
+    res.json({categories: ["Ethics","Logic","Metaphysics","Epistemology"]});
 });
 
 // req.params.category = category
