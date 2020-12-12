@@ -11,7 +11,7 @@ const app = express();
 app.set('view engine', 'ejs');
 
 const corsOptions = {
-    origin: "http://localhost:3000" //This Whitelist this site
+    origin: "*" //This Whitelist this site
 };
 
 app.use(express.json()); // 
